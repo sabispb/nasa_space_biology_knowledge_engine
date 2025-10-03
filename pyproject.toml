@@ -1,0 +1,16 @@
+[project]
+name = "nasa-space-biology-knowledge-engine"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.3.3",
+]
+
+[dependency-groups]
+dev = [
+    "isort>=6.1.0",
+    "jupyterlab>=4.4.9",
+    "jupytext>=1.17.3",
+]
