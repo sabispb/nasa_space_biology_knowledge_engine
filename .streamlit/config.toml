@@ -1,0 +1,7 @@
+[theme]
+base = "light"
+primaryColor = "#FFFFFF"          # Botons i elements en blanc per contrast
+backgroundColor = "#0B3D91"       # Blau NASA com a fons principal
+secondaryBackgroundColor = "#133E7C" # Blau més fosc per sidebar
+textColor = "#FFFFFF"             # Text blanc perquè es llegeixi bé
+font = "sans serif"
