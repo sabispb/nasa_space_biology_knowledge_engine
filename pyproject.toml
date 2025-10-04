@@ -5,8 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "biopython>=1.85",
     "pandas>=2.3.3",
+    "pyarrow>=21.0.0",
     "streamlit>=1.50.0",
+    "tqdm>=4.67.1",
 ]
 
 [dependency-groups]
