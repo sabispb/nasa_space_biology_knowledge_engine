@@ -7,9 +7,12 @@ requires-python = ">=3.11"
 dependencies = [
     "biopython>=1.85",
     "pandas>=2.3.3",
+    "plotly>=6.3.1",
     "pyarrow>=21.0.0",
+    "squarify>=0.4.4",
     "streamlit>=1.50.0",
     "tqdm>=4.67.1",
+    "wordcloud>=1.9.4",
 ]
 
 [dependency-groups]
