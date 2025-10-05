@@ -9,3 +9,6 @@
 
 # Data files
 data/
+
+# Dashboard
+dashboard/tabs/__pycache__/
