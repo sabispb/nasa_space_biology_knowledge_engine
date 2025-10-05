@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 
 from PIL import Image
 
-from tabs import highlights, overview, explore
+from tabs import highlights, overview
 
 
 st.set_page_config(layout='wide')
