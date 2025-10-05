@@ -99,3 +99,8 @@ The notebook [**src/ai/publication_searcher.ipynb**](src/ai/publication_searcher
 |----------------|-----------------------|--------|
 | Sabina Planas Bonell | sabinaplanas@gmail.com | @sabispb
 | Didac Fortuny Almiñana | dacfortuny@gmail.com | @dacfortuny
+
+## 🔭 Licenses
+
+This project uses the model haining/scientific_abstract_simplification, licensed under the MIT License.
+ © 2023 Haining, released under MIT License.
