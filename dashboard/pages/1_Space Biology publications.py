@@ -10,8 +10,8 @@ from PIL import Image
 st.set_page_config(layout='wide')
 
 df = pd.read_csv('data/SB_publication_PMC_data.csv', sep='|')
-df.rename(columns={"pmc":"PMID","article_type":"Article Type","journal":"Journal","publication_year":"Year"}, inplace=True)
-df['Link'] = df['Link'].astype("string")
+df.rename(columns={"pmc":"PMID","article_type":"Article Type","journal":"Journal","publication_year":"Year", "title":"Title"}, inplace=True)
+df['link'] = df['link'].astype("string")
 df = df.sort_values(['Year','PMID'], ascending=False)
 
 img = Image.open("dashboard/images/Nasa_space_apps_challenge.png").convert("RGBA")
@@ -73,6 +73,8 @@ selected_types = st.sidebar.multiselect(
 )
 
 # 2) Year range slider
+st.sidebar.markdown("###")
+
 year_min = int(df['Year'].min())
 year_max = int(df['Year'].max())
 
@@ -85,24 +87,40 @@ year_range = st.sidebar.slider(
     key="year_filter"
 )
 
-# --- Combine both filters ---
+# 3) Journal filter (with 'All' option)
+st.sidebar.markdown("###")
+journals = sorted(df['Journal'].dropna().unique())
+journal_options_with_all = ["All"] + journals
+
+selected_journals = st.sidebar.multiselect(
+    "Filter by Journal",
+    options=journal_options_with_all,
+    default=["All"],
+    key="journal_filter"
+)
+
+# --- Combine filters ---
 filtered_df = df.copy()
 
-# Apply Article Type filter (if not "All")
+# Filter by Article Type
 if "All" not in selected_types and selected_types:
     filtered_df = filtered_df[filtered_df['Article Type'].isin(selected_types)]
 
-# Apply Year range filter (inclusive)
+# Filter by Year range
 filtered_df = filtered_df[
     (filtered_df['Year'] >= year_range[0]) & (filtered_df['Year'] <= year_range[1])
 ]
+
+# Filter by Journal
+if "All" not in selected_journals and selected_journals:
+    filtered_df = filtered_df[filtered_df['Journal'].isin(selected_journals)]
 
 
 col1, col2 = st.columns(2)
 
 with col1:
     st.header("Distribution of Articles by Type")
-
+    st.markdown("##")
     fig = px.pie(
     filtered_df,
     names='Article Type',
@@ -201,13 +219,13 @@ st.plotly_chart(fig, use_container_width=True)
 
 st.divider()
 
-
+st.header("Articles List")
 # --- Display filtered DataFrame ---
 st.dataframe(data=filtered_df,
              hide_index=True,
              width="stretch",
-             column_order=['Title', 'Journal', 'Article Type', 'Year', 'PMID', 'Link'],
-             column_config={"Link": st.column_config.LinkColumn(display_text="Open in PubMed")},)
+             column_order=['Title', 'Journal', 'Article Type', 'Year', 'PMID', 'link'],
+             column_config={"link": st.column_config.LinkColumn(display_text="Open in PubMed")},)
 
 # --- Display total number of filtered articles ---
 st.markdown(f"**Total articles displayed:** {len(filtered_df):,}")
