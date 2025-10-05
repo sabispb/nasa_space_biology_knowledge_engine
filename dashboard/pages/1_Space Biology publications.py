@@ -7,19 +7,55 @@ import plotly.graph_objects as go
 
 from PIL import Image
 
-st.set_page_config(layout='wide')
+from tabs import highlights, overview
 
-df = pd.read_csv('data/SB_publication_PMC_data.csv', sep='|')
-df.rename(columns={"pmc":"PMID","article_type":"Article Type","journal":"Journal","publication_year":"Year", "title":"Title"}, inplace=True)
-df['link'] = df['link'].astype("string")
-df = df.sort_values(['Year','PMID'], ascending=False)
+
+st.set_page_config(layout='wide')
 
 img = Image.open("dashboard/images/Nasa_space_apps_challenge.png").convert("RGBA")
 st.logo(img, size="large")
 
-st.markdown("# Space Biology publications ")
+# ---------- Load data once (cached) ----------
+@st.cache_data
+def load_data():
+    df_text_simplified = pd.read_parquet('data/SB_publication_PMC_texts_simplified.parquet')
+    df_data = pd.read_csv('data/SB_publication_PMC_data.csv', sep='|')
+    df_main_ideas = pd.read_parquet('data/SB_publication_PMC_texts_main_ideas.parquet')
+    
 
-st.divider()
+
+    df_text_simplified['pmc'] = pd.to_numeric(df_text_simplified['pmc'], errors='coerce').astype('Int64')
+    df_data['pmc'] = pd.to_numeric(df_data['pmc'], errors='coerce').astype('Int64')
+    df_main_ideas['pmc'] = pd.to_numeric(df_data['pmc'], errors='coerce').astype('Int64')
+
+    df = df_data.merge(
+        df_text_simplified[['pmc', 'abstract', 'text', 'simplified_abstract']],
+        on='pmc',
+        how='left'
+    )
+
+    df = df.merge(
+        df_main_ideas[['pmc', 'main_ideas']],
+        on='pmc',
+        how='left'
+    )
+
+    df = df.rename(columns={
+        "pmc": "PMID",
+        "article_type": "Article Type",
+        "journal": "Journal",
+        "publication_year": "Year",
+        "title": "Title",
+        "abstract": "Abstract",
+        "text": "Full text",
+        "simplified_abstract": "Abstract Simplified",
+        "main_ideas": "Main Ideas",
+    })
+    df['link'] = df['link'].astype("string")
+    df = df.sort_values(['Year', 'PMID'], ascending=False)
+    return df
+
+df_merged = load_data()
 
 # --- Custom CSS: apply your color scheme only to the sidebar ---
 st.markdown("""
@@ -58,13 +94,12 @@ section[data-testid="stSidebar"] span[data-baseweb="tag"] {
 </style>
 """, unsafe_allow_html=True)
 
-# --- Sidebar: filters ---
+# ---------- Sidebar filters (shared) ----------
 st.sidebar.markdown("### Filters")
 
-# 1) Article Type filter (with 'All' option)
-article_types = sorted(df['Article Type'].dropna().unique())
+# 1) Article Type
+article_types = sorted(df_merged['Article Type'].dropna().unique())
 options_with_all = ["All"] + article_types
-
 selected_types = st.sidebar.multiselect(
     "Filter Publications by Article Type",
     options=options_with_all,
@@ -72,12 +107,10 @@ selected_types = st.sidebar.multiselect(
     key="article_type_filter"
 )
 
-# 2) Year range slider
+# 2) Year range
 st.sidebar.markdown("###")
-
-year_min = int(df['Year'].min())
-year_max = int(df['Year'].max())
-
+year_min = int(df_merged['Year'].min())
+year_max = int(df_merged['Year'].max())
 year_range = st.sidebar.slider(
     "Publication Year",
     min_value=year_min,
@@ -87,11 +120,10 @@ year_range = st.sidebar.slider(
     key="year_filter"
 )
 
-# 3) Journal filter (with 'All' option)
+# 3) Journal
 st.sidebar.markdown("###")
-journals = sorted(df['Journal'].dropna().unique())
+journals = sorted(df_merged['Journal'].dropna().unique())
 journal_options_with_all = ["All"] + journals
-
 selected_journals = st.sidebar.multiselect(
     "Filter by Journal",
     options=journal_options_with_all,
@@ -99,137 +131,25 @@ selected_journals = st.sidebar.multiselect(
     key="journal_filter"
 )
 
-# --- Combine filters ---
-filtered_df = df.copy()
-
-# Filter by Article Type
+# ---------- Apply filters once ----------
+filtered_df = df_merged.copy()
 if "All" not in selected_types and selected_types:
     filtered_df = filtered_df[filtered_df['Article Type'].isin(selected_types)]
 
-# Filter by Year range
 filtered_df = filtered_df[
     (filtered_df['Year'] >= year_range[0]) & (filtered_df['Year'] <= year_range[1])
 ]
 
-# Filter by Journal
 if "All" not in selected_journals and selected_journals:
     filtered_df = filtered_df[filtered_df['Journal'].isin(selected_journals)]
 
 
-col1, col2 = st.columns(2)
+# --- Tabs ---
+tab1, tab2 = st.tabs(["Overview", "Highlights"])
+with tab1:
+    overview.render(filtered_df)
 
-with col1:
-    st.header("Distribution of Articles by Type")
-    st.markdown("##")
-    fig = px.pie(
-    filtered_df,
-    names='Article Type',
-    
-)
-    st.plotly_chart(fig, use_container_width=True)
-
-with col2:
-    st.header("Number of Articles per Journal")
-
-    # Radio in horizontal layout (options side by side)
-    order = st.radio(
-        "Order:",
-        options=["Most articles", "Fewest articles"],
-        horizontal=True,
-        key="journal_order_radio"
-        )
-
-    # --- Data preparation ---
-    freq = filtered_df['Journal'].value_counts().reset_index()
-    freq.columns = ['Journal', 'Number of Articles']
-
-    ascending = True if order == "Fewest articles" else False
-    freq_sorted = freq.sort_values(by="Number of Articles", ascending=ascending)
-
-
-    # --- Display table ---
-    st.dataframe(freq_sorted, use_container_width=True, hide_index=True)
-    
-    # --- Display total count of journals ---
-    st.markdown(f"**Total journals displayed:** {len(freq_sorted):,}")
-
-    
-st.divider()
-
-st.header("Evolution of Articles per Year")
-# --- Count number of articles per publication year ---
-df_count = filtered_df['Year'].value_counts().sort_index().reset_index()
-df_count.columns = ['Year', 'num_articles']
-
-# --- Ensure all years are represented, even with 0 articles ---
-year_min, year_max = filtered_df['Year'].min(), filtered_df['Year'].max()
-full_year_range = pd.Series(range(year_min, year_max + 1), name='Year')
-
-# Reindex to include missing years (fill with 0)
-df_count = full_year_range.to_frame().merge(df_count, on='Year', how='left').fillna(0)
-
-# --- Plot with Plotly Express ---
-fig = px.line(
-    df_count,
-    x='Year',
-    y='num_articles',
-    line_shape='spline',
-    markers=True,
-)
-
-# --- Axes styling ---
-fig.update_xaxes(
-    tickmode='linear',
-    dtick=1,
-    showgrid=True,
-    gridcolor='lightgray',
-    zeroline=False,
-    color='black',
-    tickfont=dict(color='black', size=14),
-    title=None
-)
-
-fig.update_yaxes(
-    showgrid=True,
-    gridcolor='lightgray',
-    zeroline=False,
-    color='black',
-    tickfont=dict(color='black', size=14),
-    title=None
-)
-
-# --- Line and marker styling ---
-fig.update_traces(
-    line=dict(color='#1f77b4', width=3),
-    marker=dict(color='#1f77b4', size=6)
-)
-
-# --- Layout ---
-fig.update_layout(
-    plot_bgcolor='white',
-    paper_bgcolor='white',
-    font=dict(color='black', size=14, family='Arial'),
-    margin=dict(l=50, r=50, t=80, b=50)
-)
-
-
-
-# Display the Plotly figure
-st.plotly_chart(fig, use_container_width=True)
-
-st.divider()
-
-st.header("Articles List")
-# --- Display filtered DataFrame ---
-st.dataframe(data=filtered_df,
-             hide_index=True,
-             width="stretch",
-             column_order=['Title', 'Journal', 'Article Type', 'Year', 'PMID', 'link'],
-             column_config={"link": st.column_config.LinkColumn(display_text="Open in PubMed")},)
-
-# --- Display total number of filtered articles ---
-st.markdown(f"**Total articles displayed:** {len(filtered_df):,}")
-
-
+with tab2:
+    highlights.render(filtered_df)
 
 
