@@ -10,7 +10,8 @@ dependencies = [
     "pyarrow>=21.0.0",
     "streamlit>=1.50.0",
     "chromadb>=1.1.1",
-    "sentence-transformers>=5.1.1"
+    "sentence-transformers>=5.1.1",
+    "matplotlib>=3.10.6",
 ]
 
 [dependency-groups]
