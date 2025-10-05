@@ -11,7 +11,9 @@ dependencies = [
     "pyarrow>=21.0.0",
     "squarify>=0.4.4",
     "streamlit>=1.50.0",
+    "torch>=2.8.0",
     "tqdm>=4.67.1",
+    "transformers>=4.57.0",
     "wordcloud>=1.9.4",
 ]
 
