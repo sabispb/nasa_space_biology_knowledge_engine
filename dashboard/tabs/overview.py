@@ -8,7 +8,7 @@ from PIL import Image
 
 def render(df):
     
-    st.markdown("# Space Biology publications ")
+    st.markdown("# 📡  Space Biology Publications ")
 
     st.divider()
 
@@ -16,32 +16,32 @@ def render(df):
     col1, col2 = st.columns(2)
 
     with col1:
-        st.header("Distribution of Articles by Type")
+        st.header("Distribution of Publications by Type")
         st.markdown("##")
         fig = px.pie(
         df,
-        names='Article Type',
+        names='Publication Type',
         
     )
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
-        st.header("Number of Articles per Journal")
+        st.header("Number of Publications per Journal")
 
         # Radio in horizontal layout (options side by side)
         order = st.radio(
             "Order:",
-            options=["Most articles", "Fewest articles"],
+            options=["Most Publications", "Fewest Publications"],
             horizontal=True,
             key="journal_order_radio"
             )
 
         # --- Data preparation ---
         freq = df['Journal'].value_counts().reset_index()
-        freq.columns = ['Journal', 'Number of Articles']
+        freq.columns = ['Journal', 'Number of Publications']
 
-        ascending = True if order == "Fewest articles" else False
-        freq_sorted = freq.sort_values(by="Number of Articles", ascending=ascending)
+        ascending = True if order == "Fewest Publications" else False
+        freq_sorted = freq.sort_values(by="Number of Publications", ascending=ascending)
 
 
         # --- Display table ---
@@ -53,7 +53,7 @@ def render(df):
         
     st.divider()
 
-    st.header("Evolution of Articles per Year")
+    st.header("Evolution of Publications per Year")
     # --- Count number of articles per publication year ---
     df_count = df['Year'].value_counts().sort_index().reset_index()
     df_count.columns = ['Year', 'num_articles']
@@ -117,13 +117,13 @@ def render(df):
 
     st.divider()
 
-    st.header("Articles List")
+    st.header("Publications List")
     # --- Display filtered DataFrame ---
     st.dataframe(data=df,
                 hide_index=True,
                 width="stretch",
-                column_order=['Title', 'Journal', 'Article Type', 'Year', 'PMID', 'link'],
+                column_order=['Title', 'Journal', 'Publication Type', 'Year', 'PMID', 'link'],
                 column_config={"link": st.column_config.LinkColumn(display_text="Open in PubMed")},)
 
     # --- Display total number of filtered articles ---
-    st.markdown(f"**Total articles displayed:** {len(df):,}")
+    st.markdown(f"**Total publications displayed:** {len(df):,}")

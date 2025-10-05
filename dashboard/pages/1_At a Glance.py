@@ -9,7 +9,9 @@ from PIL import Image
 from tabs import highlights, overview
 
 
-st.set_page_config(layout='wide')
+st.set_page_config(layout='wide',
+                    page_title="Space Biology Publications: At a Glance",
+                    page_icon="🪐")
 
 img = Image.open("dashboard/images/Nasa_space_apps_challenge.png").convert("RGBA")
 st.logo(img, size="large")
@@ -41,7 +43,7 @@ def load_data():
 
     df = df.rename(columns={
         "pmc": "PMID",
-        "article_type": "Article Type",
+        "article_type": "Publication Type",
         "journal": "Journal",
         "publication_year": "Year",
         "title": "Title",
@@ -97,10 +99,10 @@ section[data-testid="stSidebar"] span[data-baseweb="tag"] {
 st.sidebar.markdown("### Filters")
 
 # 1) Article Type
-article_types = sorted(df_merged['Article Type'].dropna().unique())
+article_types = sorted(df_merged['Publication Type'].dropna().unique())
 options_with_all = ["All"] + article_types
 selected_types = st.sidebar.multiselect(
-    "Filter Publications by Article Type",
+    "Filter by Publication Type",
     options=options_with_all,
     default=["All"],
     key="article_type_filter"
@@ -111,7 +113,7 @@ st.sidebar.markdown("###")
 year_min = int(df_merged['Year'].min())
 year_max = int(df_merged['Year'].max())
 year_range = st.sidebar.slider(
-    "Publication Year",
+    "Filter by Publication Year",
     min_value=year_min,
     max_value=year_max,
     value=(year_min, year_max),
@@ -133,7 +135,7 @@ selected_journals = st.sidebar.multiselect(
 # ---------- Apply filters once ----------
 filtered_df = df_merged.copy()
 if "All" not in selected_types and selected_types:
-    filtered_df = filtered_df[filtered_df['Article Type'].isin(selected_types)]
+    filtered_df = filtered_df[filtered_df['Publication Type'].isin(selected_types)]
 
 filtered_df = filtered_df[
     (filtered_df['Year'] >= year_range[0]) & (filtered_df['Year'] <= year_range[1])
