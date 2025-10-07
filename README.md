@@ -50,8 +50,8 @@ The project page claimed that 608 full-text open-access Space Biology publicatio
 
 After fixing some of the invalid links and discarding those for which the correct link was not found, a dataset of 546 publications was obtained.
 
-To generate the **SB_publication_PMC_clean.csv** file use the [**src/data_retrieval/clean_sb_publications_pmc.ipynb**](src/data_retrieval/clean_sb_publications_pmc.ipynb) notebook.
-⚙️ To execute this notebook, ensure that both the original and corrections datasets are placed inside the `data` folder.
+To generate the **SB_publication_PMC_clean.csv** file use the [**src/data_retrieval/clean_sb_publications_pmc.ipynb**](src/data_retrieval/clean_sb_publications_pmc.ipynb) notebook.\
+⚙️ To execute this notebook, ensure that both the original and corrections datasets are placed inside the `data` folder.\
 Additional datasets will be generated automatically as part of the process.
 
 ### XML data from articles
