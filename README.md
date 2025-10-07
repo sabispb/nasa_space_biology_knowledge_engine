@@ -77,6 +77,12 @@ Run the notebook [**src/data_retrieval/extract_plain_text_from_xml.ipynb**](src/
 
 ## ✨ AI features
 
+### Generate simplified abstract of abstract
+
+The model [**haining/scientific_abstract_simplification**](https://huggingface.co/haining/scientific_abstract_simplification) was used to summarize, simplify, and contextualize the abstracts of all publications, providing accessible summaries of each publication. This model is based on a fine-tuned T5 architecture trained for scientific text simplification.
+
+To generate the simplified abstracts, run the [**src/ai/abstract_model.ipynb**](src/ai/abstract_model.ipynb) notebook. The resulting file **SB_publication_PMC_texts_simplified.parquet** will be created.
+
 ### Generate main ideas of articles
 
 The LLM [**Magistral Small 1.2**](https://docs.mistral.ai/getting-started/models/models_overview/) (magistral-small-2509) was used to summarize the main ideas of all publications for which the full text of the article was available.
@@ -93,6 +99,19 @@ To obtain these top-5 recommended articles, run the [**src/ai/generate_embedding
 
 The notebook [**src/ai/publication_searcher.ipynb**](src/ai/publication_searcher.ipynb) contains an example of how to use the generated embeddings to look for publications associated to any given query.
 
+## 🛰️ Interactive Dashboard
+
+The interactive dashboard was built using [**Streamlit**](https://streamlit.io/).  
+It is organized as a **multi-page app**, combining **pages** and **tabs** to let users explore publications from multiple perspectives — such as data overviews, highlights, topic browsing, and AI-generated summaries.  
+
+All the scripts are located in the **dashboard** folder of the project.  
+
+To launch the application, run the following command from the project root:  
+
+    ```
+    streamlit run dashboard/Home.py
+    ```
+
 ## 👩‍🚀 Contributors
 
 | Name           | Email                 | GitHub |
@@ -102,5 +121,13 @@ The notebook [**src/ai/publication_searcher.ipynb**](src/ai/publication_searcher
 
 ## 🔭 Licenses
 
-This project uses the model haining/scientific_abstract_simplification, licensed under the MIT License.
- © 2023 Haining, released under MIT License.
+This project uses the following models:
+
+- [**haining/scientific_abstract_simplification**](https://huggingface.co/haining/scientific_abstract_simplification)  
+  © 2023 Haining — released under the MIT License  
+
+- [**Magistral Small 1.2**](https://docs.mistral.ai/getting-started/models/models_overview/)  
+  © 2024 Mistral AI — released under the Apache License 2.0  
+
+- [**all-MiniLM-L6-v2**](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)  
+  © 2021 Sentence Transformers / UKPLab — released under the Apache License 2.0
