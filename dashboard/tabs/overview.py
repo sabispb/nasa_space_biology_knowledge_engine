@@ -12,6 +12,9 @@ def render(df):
 
     st.divider()
 
+    if df.empty:
+        st.warning("No publications available for the selected filters.", icon="👽")
+        return
 
     col1, col2 = st.columns(2)
 
@@ -23,7 +26,7 @@ def render(df):
         names='Publication Type',
         
     )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, config = {"width":"stretch"})
 
     with col2:
         st.header("Number of Publications per Journal")
@@ -45,7 +48,7 @@ def render(df):
 
 
         # --- Display table ---
-        st.dataframe(freq_sorted, use_container_width=True, hide_index=True)
+        st.dataframe(freq_sorted, width="stretch", hide_index=True)
         
         # --- Display total count of journals ---
         st.markdown(f"**Total journals displayed:** {len(freq_sorted):,}")
@@ -57,10 +60,16 @@ def render(df):
     # --- Count number of articles per publication year ---
     df_count = df['Year'].value_counts().sort_index().reset_index()
     df_count.columns = ['Year', 'num_articles']
+    
+    years = pd.to_numeric(df['Year'], errors='coerce')
 
     # --- Ensure all years are represented, even with 0 articles ---
-    year_min, year_max = df['Year'].min(), df['Year'].max()
-    full_year_range = pd.Series(range(year_min, year_max + 1), name='Year')
+    if years.dropna().empty:
+        full_year_range = pd.Series(dtype='Int64', name='Year')
+    else:
+        year_min = int(years.min())
+        year_max = int(years.max())
+        full_year_range = pd.Series(range(year_min, year_max + 1), name='Year')
 
     # Reindex to include missing years (fill with 0)
     df_count = full_year_range.to_frame().merge(df_count, on='Year', how='left').fillna(0)
@@ -113,7 +122,7 @@ def render(df):
 
 
     # Display the Plotly figure
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, config = {"width":"stretch"})
 
     st.divider()
 

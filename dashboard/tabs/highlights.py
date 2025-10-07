@@ -7,7 +7,6 @@ import plotly.graph_objects as go
 from PIL import Image
 
 def render(df):
-  
 
     df_recs = pd.read_csv('data/SB_publication_PMC_recommendations.csv', sep='|')
     df_recs = df_recs.rename(columns={"pmc": "PMID", "recommended_rank": "Rank","recommended_pmc": "PMID publication","recommended_title":"Title", "recommended_link":"Link publication"})
@@ -16,6 +15,10 @@ def render(df):
     st.markdown("# 💫 Highlights from Space Biology Publications ")
 
     st.divider()
+    
+    if df.empty:
+        st.warning("No publications available for the selected filters.", icon="👽")
+        st.stop()
 
     st.header("Publication List")
     
@@ -90,7 +93,7 @@ def render(df):
                 column_order=['Rank','Title','PMID publication', 'Link publication'],
                 hide_index=True,
                 column_config={
-                    "Link publication": st.column_config.LinkColumn(display_text="Open publication")
+                    "Link publication": st.column_config.LinkColumn(display_text="Open in PubMed")
                 }
             )
         else:

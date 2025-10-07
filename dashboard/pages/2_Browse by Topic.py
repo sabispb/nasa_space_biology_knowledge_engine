@@ -32,7 +32,7 @@ def retrieve_similar_documents(query, n_results=10):
             break
     return pmcs
 
-st.caption("Find publications related to your topic of interest. This tool lets you search for Space Biology publications by topic using a semantic search engine — meaning it looks for articles with similar meanings, not just exact words.")
+st.caption("Find publications related to your topic of interest. This tool lets you search for Space Biology publications by topic using a semantic search engine — meaning it looks for publications with similar meanings, not just exact words.")
 
 st.markdown("###")
 

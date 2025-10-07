@@ -28,6 +28,7 @@ def load_data():
     df_text_simplified['pmc'] = pd.to_numeric(df_text_simplified['pmc'], errors='coerce').astype('Int64')
     df_data['pmc'] = pd.to_numeric(df_data['pmc'], errors='coerce').astype('Int64')
     df_main_ideas['pmc'] = pd.to_numeric(df_data['pmc'], errors='coerce').astype('Int64')
+    df_data['publication_year'] = pd.to_numeric(df_data['publication_year'], errors='coerce')
 
     df = df_data.merge(
         df_text_simplified[['pmc', 'abstract', 'text', 'simplified_abstract']],
