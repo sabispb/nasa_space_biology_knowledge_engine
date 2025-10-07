@@ -104,6 +104,7 @@ The notebook [**src/ai/publication_searcher.ipynb**](src/ai/publication_searcher
 The interactive dashboard was built using [**Streamlit**](https://streamlit.io/).  
 It is organized as a **multi-page app**, combining **pages** and **tabs** to let users explore publications from multiple perspectives — such as data overviews, highlights, topic browsing, and AI-generated summaries.  
 
+The Streamlit configuration (theme, server, browser) is stored in the `.streamlit/` folder.  
 All the scripts are located in the **dashboard** folder of the project.  
 
 To launch the application, run the following command from the project root:  
