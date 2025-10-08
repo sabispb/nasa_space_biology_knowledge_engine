@@ -6,7 +6,7 @@ This project supports NASA's vision for safe and efficient human exploration of 
 
 This tool leverages data analytics and artificial intelligence to extract key insights, reveal research trends and gaps, and enable scientists, program managers, and mission planners to explore the impacts and outcomes of past space experiments through an interactive and accessible web interface.
 
-The dashboard is available here: **https://93.189.89.7/biendepuerrobien/**
+The dashboard is available here: **https://93.189.89.7/nasa_challenge/**
 
 ## 🌒 Project setup
 
